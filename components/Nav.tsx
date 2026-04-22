@@ -1,11 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BarChart3, Search, AlertTriangle } from 'lucide-react'
+import { BarChart3, Search, AlertTriangle, FlaskConical } from 'lucide-react'
 
 const links = [
   { href: '/', label: 'Dashboard', icon: BarChart3 },
   { href: '/screener', label: 'Screener', icon: Search },
+  { href: '/assess', label: 'Assess', icon: FlaskConical },
 ]
 
 export default function Nav() {
