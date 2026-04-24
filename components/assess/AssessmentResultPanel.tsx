@@ -1,9 +1,12 @@
 import type { AssessmentResult } from '@/lib/assess'
 
-const TIER_STYLE = {
-  HIGH: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', ring: 'ring-red-200', bar: 'bg-red-500' },
-  MEDIUM: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', ring: 'ring-amber-200', bar: 'bg-amber-500' },
-  LOW: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', ring: 'ring-emerald-200', bar: 'bg-emerald-500' },
+const TIER_STYLE: Record<string, { bg: string; border: string; text: string; ring: string; bar: string }> = {
+  'Very Low':  { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', ring: 'ring-emerald-200', bar: 'bg-emerald-400' },
+  'Low':       { bg: 'bg-teal-50',    border: 'border-teal-200',    text: 'text-teal-700',    ring: 'ring-teal-200',    bar: 'bg-teal-400' },
+  'Moderate':  { bg: 'bg-yellow-50',  border: 'border-yellow-200',  text: 'text-yellow-700',  ring: 'ring-yellow-200',  bar: 'bg-yellow-400' },
+  'Elevated':  { bg: 'bg-orange-50',  border: 'border-orange-200',  text: 'text-orange-700',  ring: 'ring-orange-200',  bar: 'bg-orange-400' },
+  'High':      { bg: 'bg-red-50',     border: 'border-red-200',     text: 'text-red-700',     ring: 'ring-red-200',     bar: 'bg-red-500' },
+  'Very High': { bg: 'bg-red-100',    border: 'border-red-300',     text: 'text-red-800',     ring: 'ring-red-300',     bar: 'bg-red-600' },
 }
 
 const ZONE_STYLE = {
@@ -128,8 +131,11 @@ export default function AssessmentResultPanel({
               <span className="font-mono text-zinc-500">{f.company_id} · {f.fiscal_year}</span>
               <div className="flex items-center gap-2">
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold border ${
-                  f.risk_tier === 'HIGH' ? 'bg-red-50 text-red-600 border-red-200' :
-                  f.risk_tier === 'MEDIUM' ? 'bg-amber-50 text-amber-600 border-amber-200' :
+                  f.risk_tier === 'Very High' ? 'bg-red-100 text-red-800 border-red-300' :
+                  f.risk_tier === 'High' ? 'bg-red-50 text-red-600 border-red-200' :
+                  f.risk_tier === 'Elevated' ? 'bg-orange-50 text-orange-600 border-orange-200' :
+                  f.risk_tier === 'Moderate' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' :
+                  f.risk_tier === 'Low' ? 'bg-teal-50 text-teal-600 border-teal-200' :
                   'bg-emerald-50 text-emerald-600 border-emerald-200'
                 }`}>{f.risk_tier}</span>
                 <span className="font-mono font-semibold text-zinc-700">

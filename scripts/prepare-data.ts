@@ -48,35 +48,36 @@ async function readCsv(filePath: string): Promise<Record<string, string>[]> {
 async function main() {
   console.log('Reading source files…')
 
-  const [features, predictions, enhanced] = await Promise.all([
+  const [features, predictions, enhanced, riskScores] = await Promise.all([
     readCsv(path.join(SRC, 'data/test_features.csv')),
     readCsv(path.join(SRC, 'data/processed/challenge1_test_predictions.csv')),
     readCsv(path.join(SRC, 'test_features_enhanced.csv')),
+    readCsv(path.join(SRC, 'data/processed/challenge1_test_risk_scores.csv')),
   ])
 
   console.log(`  features: ${features.length} rows`)
   console.log(`  predictions: ${predictions.length} rows`)
   console.log(`  enhanced: ${enhanced.length} rows`)
+  console.log(`  risk scores: ${riskScores.length} rows`)
 
-  // Index predictions by key
+  // Index by key
   const predMap = new Map<string, Record<string, string>>()
-  for (const p of predictions) {
-    predMap.set(`${p.company_id}|${p.fiscal_year}`, p)
-  }
+  for (const p of predictions) predMap.set(`${p.company_id}|${p.fiscal_year}`, p)
 
-  // Index enhanced by key
   const enhMap = new Map<string, Record<string, string>>()
-  for (const e of enhanced) {
-    enhMap.set(`${e.company_id}|${e.fiscal_year}`, e)
-  }
+  for (const e of enhanced) enhMap.set(`${e.company_id}|${e.fiscal_year}`, e)
+
+  const riskMap = new Map<string, Record<string, string>>()
+  for (const r of riskScores) riskMap.set(`${r.company_id}|${r.fiscal_year}`, r)
 
   const firms = features.map((f) => {
     const key = `${f.company_id}|${f.fiscal_year}`
     const pred = predMap.get(key) ?? {}
     const enh = enhMap.get(key) ?? {}
+    const risk = riskMap.get(key) ?? {}
 
     const prob = parseNum(pred.bankruptcy_probability ?? '') ?? 0
-    const riskTier = prob >= 0.31 ? 'HIGH' : prob >= 0.10 ? 'MEDIUM' : 'LOW'
+    const riskTier = (risk.risk_tier ?? 'Very Low') as string
     const sector = parseStr(f.ateco_sector)
 
     return {
@@ -106,6 +107,8 @@ async function main() {
       // prediction
       bankruptcy_probability: prob,
       bankruptcy_predicted: parseInt(pred.bankruptcy_predicted ?? '0') || 0,
+      risk_score_0_100: parseNum(risk.risk_score_0_100 ?? '') ?? +(prob * 100).toFixed(2),
+      risk_decile: parseStr(risk.risk_decile ?? 'D1'),
       risk_tier: riskTier,
     }
   })
@@ -118,9 +121,8 @@ async function main() {
   console.log(`\nWrote ${firms.length} firms → ${OUT}`)
   console.log(`File size: ${(fs.statSync(OUT).size / 1024).toFixed(0)} KB`)
 
-  const flagged = firms.filter(f => f.risk_tier === 'HIGH').length
-  const medium = firms.filter(f => f.risk_tier === 'MEDIUM').length
-  console.log(`\nRisk tiers: HIGH=${flagged}, MEDIUM=${medium}, LOW=${firms.length - flagged - medium}`)
+  const tiers = ['Very Low','Low','Moderate','Elevated','High','Very High']
+  tiers.forEach(t => console.log(`  ${t}: ${firms.filter(f => f.risk_tier === t).length}`))
 }
 
 main().catch(console.error)

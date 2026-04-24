@@ -15,9 +15,12 @@ const SECTORS = [...new Map(ALL_FIRMS.map(f => [f.ateco_sector, f.sector_label])
   .sort((a, b) => a[0] - b[0])
 
 const TIER_BADGE: Record<string, string> = {
-  HIGH: 'bg-red-50 text-red-700 border border-red-200',
-  MEDIUM: 'bg-amber-50 text-amber-700 border border-amber-200',
-  LOW: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  'Very Low':  'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  'Low':       'bg-teal-50 text-teal-700 border border-teal-200',
+  'Moderate':  'bg-yellow-50 text-yellow-700 border border-yellow-200',
+  'Elevated':  'bg-orange-50 text-orange-700 border border-orange-200',
+  'High':      'bg-red-50 text-red-700 border border-red-200',
+  'Very High': 'bg-red-100 text-red-800 border border-red-300',
 }
 
 function Select({ value, onChange, placeholder, children }: {
@@ -122,9 +125,12 @@ export default function ScreenerPage() {
       {showFilters && (
         <div className="flex gap-3 mb-4 flex-wrap bg-zinc-50 border border-zinc-200 rounded-xl p-4">
           <Select value={riskTier} onChange={v => { setRiskTier(v); setPage(0) }} placeholder="All risk tiers">
-            <option value="HIGH">HIGH</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="LOW">LOW</option>
+            <option value="Very Low">Very Low</option>
+            <option value="Low">Low</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Elevated">Elevated</option>
+            <option value="High">High</option>
+            <option value="Very High">Very High</option>
           </Select>
           <Select value={sector} onChange={v => { setSector(v); setPage(0) }} placeholder="All sectors">
             {SECTORS.map(([code, label]) => <option key={code} value={code}>{label}</option>)}

@@ -41,10 +41,13 @@ function FeatureBar({ label, value, rawValue, isRisky }: { label: string; value:
   )
 }
 
-const TIER_STYLE = {
-  HIGH: 'bg-red-50 text-red-700 border-red-200',
-  MEDIUM: 'bg-amber-50 text-amber-700 border-amber-200',
-  LOW: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+const TIER_STYLE: Record<string, string> = {
+  'Very Low':  'bg-emerald-50 text-emerald-700 border-emerald-200',
+  'Low':       'bg-teal-50 text-teal-700 border-teal-200',
+  'Moderate':  'bg-yellow-50 text-yellow-700 border-yellow-200',
+  'Elevated':  'bg-orange-50 text-orange-700 border-orange-200',
+  'High':      'bg-red-50 text-red-700 border-red-200',
+  'Very High': 'bg-red-100 text-red-800 border-red-300',
 }
 
 export default function FirmDrawer({ firm, onClose }: { firm: Firm | null; onClose: () => void }) {

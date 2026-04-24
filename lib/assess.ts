@@ -35,7 +35,7 @@ export interface AssessmentResult {
   estimatedProbability: number
   estimatedProbabilityP25: number
   estimatedProbabilityP75: number
-  tier: 'HIGH' | 'MEDIUM' | 'LOW'
+  tier: 'Very Low' | 'Low' | 'Moderate' | 'Elevated' | 'High' | 'Very High'
   sectorComparison: SectorComparison[]
 }
 
@@ -134,7 +134,12 @@ export function runAssessment(inp: FirmInputs, allFirms: Firm[]): AssessmentResu
 
   const probs = neighbors.map(f => f.bankruptcy_probability)
   const estimatedProbability = probs.reduce((a, b) => a + b, 0) / probs.length
-  const tier = estimatedProbability >= 0.31 ? 'HIGH' : estimatedProbability >= 0.10 ? 'MEDIUM' : 'LOW'
+  const tier = estimatedProbability >= 0.50 ? 'Very High'
+    : estimatedProbability >= 0.31 ? 'High'
+    : estimatedProbability >= 0.15 ? 'Elevated'
+    : estimatedProbability >= 0.07 ? 'Moderate'
+    : estimatedProbability >= 0.02 ? 'Low'
+    : 'Very Low'
 
   // Sector medians for comparison
   const sectorFirms = sectorPool.length >= 5 ? sectorPool : allFirms

@@ -1,4 +1,4 @@
-export type RiskTier = 'HIGH' | 'MEDIUM' | 'LOW'
+export type RiskTier = 'Very Low' | 'Low' | 'Moderate' | 'Elevated' | 'High' | 'Very High'
 
 export interface Firm {
   company_id: string
@@ -25,6 +25,8 @@ export interface Firm {
   neg_margin_streak: number | null
   bankruptcy_probability: number
   bankruptcy_predicted: number
+  risk_score_0_100: number
+  risk_decile: string
   risk_tier: RiskTier
 }
 
