@@ -9,19 +9,20 @@ export default function SectorBreakdown({ data }: { data: { sector: string; coun
   }))
 
   return (
-    <div className="bg-white border border-zinc-200 rounded-xl p-5">
-      <h2 className="text-sm font-semibold text-zinc-700 mb-4">Flagged Firms by Sector</h2>
+    <div className="rounded-xl border p-5" style={{ background: 'var(--paper)', borderColor: 'var(--rule)' }}>
+      <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--ink-mute)', letterSpacing: '0.18em' }}>By Sector</p>
+      <p className="text-xs mb-4" style={{ color: 'var(--ink-mute)' }}>Very High risk firms by ATECO sector</p>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 40, left: 8, bottom: 0 }}>
-          <XAxis type="number" tick={{ fontSize: 11, fill: '#71717a' }} />
-          <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#71717a' }} width={130} />
+          <XAxis type="number" tick={{ fontSize: 10, fill: '#6c7289', fontFamily: 'JetBrains Mono' }} />
+          <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#6c7289' }} width={130} />
           <Tooltip
-            contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e4e4e7' }}
+            contentStyle={{ fontSize: 12, borderRadius: 4, border: '1px solid rgba(26,34,56,0.15)', background: '#faf7f0', color: '#1a2238' }}
             formatter={(v, _name, p) => [
               `${v} firms (${(p as { payload: { rate: string } }).payload.rate}% of sector)`, 'Flagged'
             ]}
           />
-          <Bar dataKey="flagged" fill="#6366f1" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="flagged" fill="#7a1f2b" radius={[0, 3, 3, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

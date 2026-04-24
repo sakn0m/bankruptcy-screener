@@ -7,7 +7,6 @@ function fmt(v: number | null, decimals = 2, suffix = '') {
   if (v == null) return '—'
   return v.toFixed(decimals) + suffix
 }
-
 function pct(v: number | null) {
   if (v == null) return '—'
   return (v * 100).toFixed(1) + '%'
@@ -19,75 +18,74 @@ const SHAP_FEATURES: { key: keyof Firm; label: string; format: (v: Firm) => stri
   { key: 'debt_to_assets', label: 'Debt to assets', format: f => fmt(f.debt_to_assets, 3), higherIsRisk: true },
   { key: 'current_ratio', label: 'Current ratio', format: f => fmt(f.current_ratio, 2), higherIsRisk: false },
   { key: 'leverage_vs_sector', label: 'Leverage vs sector', format: f => fmt(f.leverage_vs_sector, 3), higherIsRisk: true },
-  { key: 'debt_to_assets_slope', label: 'Debt/assets trend (slope)', format: f => fmt(f.debt_to_assets_slope, 4), higherIsRisk: true },
-  { key: 'current_ratio_slope', label: 'Current ratio trend (slope)', format: f => fmt(f.current_ratio_slope, 4), higherIsRisk: false },
+  { key: 'debt_to_assets_slope', label: 'Debt/assets trend', format: f => fmt(f.debt_to_assets_slope, 4), higherIsRisk: true },
+  { key: 'current_ratio_slope', label: 'Current ratio trend', format: f => fmt(f.current_ratio_slope, 4), higherIsRisk: false },
 ]
 
 function FeatureBar({ label, value, rawValue, isRisky }: { label: string; value: number | null; rawValue: string; isRisky?: boolean }) {
   const pctWidth = value != null ? Math.min(Math.abs(value) * 80 + 5, 95) : 5
   return (
-    <div className="flex items-center gap-3 py-2 border-b border-zinc-100 last:border-0">
-      <div className="w-44 text-xs text-zinc-500 shrink-0">{label}</div>
-      <div className="flex-1 bg-zinc-100 rounded-full h-1.5 overflow-hidden">
-        <div
-          className={`h-full rounded-full ${isRisky ? 'bg-red-400' : 'bg-indigo-400'}`}
-          style={{ width: `${pctWidth}%` }}
-        />
+    <div className="flex items-center gap-3 py-2 border-b last:border-0" style={{ borderColor: 'var(--rule)' }}>
+      <div className="w-44 text-xs shrink-0" style={{ color: 'var(--ink-mute)' }}>{label}</div>
+      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--bg-alt)' }}>
+        <div className="h-full rounded-full" style={{ width: `${pctWidth}%`, background: isRisky ? 'var(--accent)' : 'var(--gold)' }} />
       </div>
-      <div className={`w-20 text-xs font-mono text-right ${isRisky ? 'text-red-600' : 'text-zinc-700'}`}>
+      <div className="w-20 text-xs font-mono text-right" style={{ color: isRisky ? 'var(--accent)' : 'var(--ink)', fontFamily: 'JetBrains Mono' }}>
         {rawValue}
       </div>
     </div>
   )
 }
 
-const TIER_STYLE: Record<string, string> = {
-  'Very Low':  'bg-emerald-50 text-emerald-700 border-emerald-200',
-  'Low':       'bg-teal-50 text-teal-700 border-teal-200',
-  'Moderate':  'bg-yellow-50 text-yellow-700 border-yellow-200',
-  'Elevated':  'bg-orange-50 text-orange-700 border-orange-200',
-  'High':      'bg-red-50 text-red-700 border-red-200',
-  'Very High': 'bg-red-100 text-red-800 border-red-300',
+const TIER_COLOR: Record<string, string> = {
+  'Very Low':  '#2d6a4f', 'Low': '#1e7b6e', 'Moderate': '#8a6620',
+  'Elevated':  '#c06020', 'High': '#7a1f2b', 'Very High': '#5a1020',
 }
 
 export default function FirmDrawer({ firm, onClose }: { firm: Firm | null; onClose: () => void }) {
+  const altman = firm?.altman_z_like_score
+  const altmanZone = altman == null ? null : altman < 1.23 ? 'distress' : altman > 2.9 ? 'safe' : 'grey'
+
   return (
     <Dialog.Root open={firm != null} onOpenChange={open => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/30 z-40" />
-        <Dialog.Content className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 overflow-y-auto focus:outline-none">
+        <Dialog.Overlay className="fixed inset-0 z-40" style={{ background: 'rgba(26,34,56,0.4)' }} />
+        <Dialog.Content className="fixed right-0 top-0 h-full w-full max-w-md z-50 overflow-y-auto focus:outline-none" style={{ background: 'var(--paper)' }}>
           {firm && (
             <>
               {/* Header */}
-              <div className="sticky top-0 bg-white border-b border-zinc-200 px-6 py-4 flex items-start justify-between">
+              <div className="sticky top-0 px-6 py-4 flex items-start justify-between border-b" style={{ background: 'var(--paper)', borderColor: 'var(--rule)' }}>
                 <div>
-                  <p className="font-mono text-xs text-zinc-400">{firm.company_id}</p>
-                  <h2 className="text-lg font-bold text-zinc-900 mt-0.5">{firm.sector_label}</h2>
-                  <p className="text-sm text-zinc-500">{firm.region} · {firm.legal_form} · {firm.fiscal_year}</p>
+                  <p className="font-mono text-xs" style={{ color: 'var(--ink-mute)', fontFamily: 'JetBrains Mono' }}>{firm.company_id}</p>
+                  <h2 className="text-lg font-bold mt-0.5" style={{ fontFamily: 'Fraunces, serif', color: 'var(--ink)' }}>{firm.sector_label}</h2>
+                  <p className="text-sm" style={{ color: 'var(--ink-mute)' }}>{firm.region} · {firm.legal_form} · {firm.fiscal_year}</p>
                 </div>
-                <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700">
+                <button onClick={onClose} className="p-1.5 rounded-lg" style={{ color: 'var(--ink-mute)' }}>
                   <X size={16} />
                 </button>
               </div>
 
               <div className="px-6 py-5 space-y-6">
                 {/* Risk score */}
-                <div className="bg-zinc-50 rounded-xl p-4 flex items-center justify-between">
+                <div className="rounded-xl p-4 flex items-center justify-between" style={{ background: 'var(--bg-alt)', border: '1px solid var(--rule)' }}>
                   <div>
-                    <p className="text-xs text-zinc-500">Bankruptcy probability</p>
-                    <p className="text-4xl font-bold text-zinc-900 mt-1">
+                    <p className="text-xs uppercase tracking-wider" style={{ color: 'var(--ink-mute)', letterSpacing: '0.16em' }}>Bankruptcy probability</p>
+                    <p className="text-4xl font-bold mt-1" style={{ fontFamily: 'Fraunces, serif', color: 'var(--ink)' }}>
                       {(firm.bankruptcy_probability * 100).toFixed(1)}
-                      <span className="text-lg font-normal text-zinc-400">%</span>
+                      <span className="text-lg font-normal" style={{ color: 'var(--ink-mute)' }}>%</span>
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${TIER_STYLE[firm.risk_tier]}`}>
+                  <span className="px-3 py-1 rounded text-sm font-semibold" style={{
+                    background: 'rgba(122,31,43,0.08)', color: TIER_COLOR[firm.risk_tier] ?? 'var(--ink)',
+                    border: `1px solid ${TIER_COLOR[firm.risk_tier] ?? 'var(--rule)'}`,
+                  }}>
                     {firm.risk_tier}
                   </span>
                 </div>
 
                 {/* Company details */}
                 <div>
-                  <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Company Details</h3>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--ink-mute)', letterSpacing: '0.16em' }}>Company Details</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       ['Province', firm.province],
@@ -95,53 +93,48 @@ export default function FirmDrawer({ firm, onClose }: { firm: Firm | null; onClo
                       ['Years active', firm.years_in_business != null ? String(firm.years_in_business) : '—'],
                       ['Total assets', firm.total_assets != null ? '€' + (firm.total_assets / 1e6).toFixed(1) + 'M' : '—'],
                     ].map(([k, v]) => (
-                      <div key={k} className="bg-zinc-50 rounded-lg p-3">
-                        <p className="text-xs text-zinc-400">{k}</p>
-                        <p className="text-sm font-medium text-zinc-800 mt-0.5">{v}</p>
+                      <div key={k} className="rounded-lg p-3" style={{ background: 'var(--bg-alt)', border: '1px solid var(--rule)' }}>
+                        <p className="text-xs" style={{ color: 'var(--ink-mute)' }}>{k}</p>
+                        <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--ink)', fontFamily: 'JetBrains Mono' }}>{v}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Altman Z */}
-                {firm.altman_z_like_score != null && (
+                {altman != null && (
                   <div>
-                    <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Altman Z-Score</h3>
-                    <div className={`rounded-xl p-4 ${firm.altman_z_like_score < 1.23 ? 'bg-red-50 border border-red-200' : firm.altman_z_like_score > 2.9 ? 'bg-emerald-50 border border-emerald-200' : 'bg-amber-50 border border-amber-200'}`}>
-                      <p className="text-2xl font-bold text-zinc-900">{firm.altman_z_like_score.toFixed(2)}</p>
-                      <p className="text-xs mt-1 text-zinc-600">
-                        {firm.altman_z_like_score < 1.23 ? '⚠ Distress zone (< 1.23)' : firm.altman_z_like_score > 2.9 ? '✓ Safe zone (> 2.90)' : '~ Grey zone (1.23–2.90)'}
+                    <h3 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--ink-mute)', letterSpacing: '0.16em' }}>Altman Z-Score</h3>
+                    <div className="rounded-xl p-4" style={{
+                      background: altmanZone === 'distress' ? 'rgba(122,31,43,0.06)' : altmanZone === 'safe' ? 'rgba(45,106,79,0.06)' : 'rgba(179,139,63,0.06)',
+                      border: `1px solid ${altmanZone === 'distress' ? 'var(--accent)' : altmanZone === 'safe' ? '#2d6a4f' : 'var(--gold)'}`,
+                    }}>
+                      <p className="text-2xl font-bold" style={{ fontFamily: 'Fraunces, serif', color: 'var(--ink)' }}>{altman.toFixed(2)}</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--ink-soft)' }}>
+                        {altmanZone === 'distress' ? '⚠ Distress zone (< 1.23)' : altmanZone === 'safe' ? '✓ Safe zone (> 2.90)' : '~ Grey zone (1.23–2.90)'}
                       </p>
                     </div>
                   </div>
                 )}
 
-                {/* Consecutive negative margin streak */}
+                {/* Negative margin streak */}
                 {firm.neg_margin_streak != null && firm.neg_margin_streak > 0 && (
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                    <p className="text-xs text-red-600 font-medium uppercase tracking-wider">Distress Signal</p>
-                    <p className="text-lg font-bold text-red-700 mt-1">{firm.neg_margin_streak} consecutive</p>
-                    <p className="text-xs text-red-600">negative-margin years</p>
+                  <div className="rounded-xl p-4" style={{ background: 'rgba(122,31,43,0.06)', border: '1px solid var(--accent)' }}>
+                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)', letterSpacing: '0.16em' }}>Distress Signal</p>
+                    <p className="text-lg font-bold mt-1" style={{ fontFamily: 'Fraunces, serif', color: 'var(--accent)' }}>{firm.neg_margin_streak} consecutive</p>
+                    <p className="text-xs" style={{ color: 'var(--accent-soft)' }}>negative-margin years</p>
                   </div>
                 )}
 
-                {/* SHAP-style feature bars */}
+                {/* SHAP feature bars */}
                 <div>
-                  <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-                    Key Risk Factors <span className="font-normal text-zinc-300">(SHAP-ranked)</span>
+                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--ink-mute)', letterSpacing: '0.16em' }}>
+                    Key Risk Factors <span className="font-normal" style={{ color: 'var(--ink-mute)', opacity: 0.6 }}>(SHAP-ranked)</span>
                   </h3>
                   {SHAP_FEATURES.map(({ key, label, format, higherIsRisk }) => {
                     const val = firm[key] as number | null
                     const isRisky = higherIsRisk ? (val != null && val > 0) : (val != null && val < 0)
-                    return (
-                      <FeatureBar
-                        key={key}
-                        label={label}
-                        value={val}
-                        rawValue={format(firm)}
-                        isRisky={isRisky}
-                      />
-                    )
+                    return <FeatureBar key={key} label={label} value={val} rawValue={format(firm)} isRisky={isRisky} />
                   })}
                 </div>
               </div>
