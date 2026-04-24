@@ -94,9 +94,9 @@ export default function DashboardPage() {
             ['Features', '79 engineered'],
             ['Train period', '2018–2020'],
             ['Val year', '2021'],
-            ['F1 (2021)', '0.140'],
-            ['ROC-AUC (2021)', '0.938'],
-            ['PR-AUC (2021)', '0.077'],
+            ['F1 (2021)', '0.124'],
+            ['ROC-AUC (2021)', '0.918'],
+            ['PR-AUC (2021)', '0.054'],
             ['Base rate', '0.71%'],
           ].map(([k, v]) => (
             <div key={k}>

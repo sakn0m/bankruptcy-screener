@@ -16,7 +16,7 @@ export default function KPIBanner({ stats }: { stats: DashboardStats }) {
       <KPI label="Firms scored" value={stats.total.toLocaleString()} sub="2022–2023 test period" />
       <KPI label="Very High risk" value={stats.flagged.toLocaleString()} sub={`${(stats.flaggedRate * 100).toFixed(2)}% of test sample`} accent />
       <KPI label="Max risk score" value={(stats.maxProb * 100).toFixed(1) + '%'} sub="Highest probability firm" accent />
-      <KPI label="Model AUC" value="0.938" sub="ROC-AUC · 2021 validation" />
+      <KPI label="Model AUC" value="0.918" sub="ROC-AUC · 2021 validation" />
     </div>
   )
 }

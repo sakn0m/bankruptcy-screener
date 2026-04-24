@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react'
 import * as Slider from '@radix-ui/react-slider'
 
 export default function ThresholdSimulator({ probs }: { probs: number[] }) {
-  const [thr, setThr] = useState(0.55)
+  const [thr, setThr] = useState(0.109)
   const flagged = useMemo(() => probs.filter(p => p >= thr).length, [probs, thr])
   const rate = ((flagged / probs.length) * 100).toFixed(2)
 
@@ -38,10 +38,10 @@ export default function ThresholdSimulator({ probs }: { probs: number[] }) {
 
       <div className="mt-4 flex items-center gap-2 flex-wrap">
         <div className="rounded px-3 py-1.5 text-sm font-mono font-semibold" style={{ background: 'var(--bg-alt)', color: 'var(--accent)', border: '1px solid var(--rule)' }}>
-          thr = {(thr * 100).toFixed(0)}%
+          thr = {(thr * 100).toFixed(1)}%
         </div>
         <div className="flex gap-2 text-xs">
-          {[0.10, 0.31, 0.55, 0.80].map(t => (
+          {[0.109, 0.20, 0.40, 0.60].map(t => (
             <button
               key={t}
               onClick={() => setThr(t)}
