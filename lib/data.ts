@@ -10,17 +10,17 @@ export function getFirms(): Firm[] {
 }
 
 export function getDashboardStats(firms: Firm[]): DashboardStats {
-  const flagged = firms.filter(f => f.bankruptcy_predicted === 1)
+  const flagged = firms.filter(f => f.risk_tier === 'Very High')
   const maxProb = Math.max(...firms.map(f => f.bankruptcy_probability))
 
-  // Sector breakdown (flagged firms only)
+  // Sector breakdown (Very High risk tier only)
   const sectorMap = new Map<string, { count: number; total: number }>()
   for (const f of firms) {
     const key = f.sector_label
     if (!sectorMap.has(key)) sectorMap.set(key, { count: 0, total: 0 })
     const entry = sectorMap.get(key)!
     entry.total++
-    if (f.bankruptcy_predicted === 1) entry.count++
+    if (f.risk_tier === 'Very High') entry.count++
   }
   const sectorBreakdown = [...sectorMap.entries()]
     .map(([sector, v]) => ({ sector, ...v }))
