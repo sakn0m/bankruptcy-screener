@@ -49,7 +49,7 @@ async function main() {
   console.log('Reading source files…')
 
   const [features, predictions, enhanced, riskScores] = await Promise.all([
-    readCsv(path.join(SRC, 'data/test_features.csv')),
+    readCsv(path.join(SRC, 'data/processed/test_features.csv')),
     readCsv(path.join(SRC, 'data/processed/challenge1_test_predictions.csv')),
     readCsv(path.join(SRC, 'test_features_enhanced.csv')),
     readCsv(path.join(SRC, 'data/processed/challenge1_test_risk_scores.csv')),

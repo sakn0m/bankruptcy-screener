@@ -43,7 +43,7 @@ export default function Nav() {
 
       <div className="px-5 py-4 border-t border-zinc-800 text-xs text-zinc-600">
         <p>LightGBM · 2022–2023</p>
-        <p>ROC-AUC 0.938 · F1 0.140</p>
+        <p>ROC-AUC 0.918 · F1 0.124</p>
       </div>
     </aside>
   )

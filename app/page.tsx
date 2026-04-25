@@ -73,7 +73,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
           {[
             ['Algorithm', 'LightGBM + SMOTE'],
-            ['Features', '79 engineered'],
+            ['Features', '78 engineered'],
             ['Train period', '2018–2020'],
             ['Val year', '2021'],
             ['F1 (2021)', '0.124'],
